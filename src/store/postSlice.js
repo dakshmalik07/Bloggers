@@ -41,7 +41,7 @@ const postSlice = createSlice({
       state.currentPost = action.payload;
     },
     clearCurrentPost: (state) => {
-      state.currentPost = null;
+      state.currentPost = null; 
     },
   },
 });

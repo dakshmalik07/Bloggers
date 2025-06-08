@@ -44,7 +44,7 @@ function AllPosts() {
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-fr">
                         {posts.length === 0 ? (
                             <div className="col-span-full py-16 text-center">
                                 <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -55,9 +55,7 @@ function AllPosts() {
                             </div>
                         ) : (
                             posts.map((post) => (
-                                <div key={post.$id} className="flex">
-                                    <PostCard {...post} />
-                                </div>
+                                <PostCard key={post.$id} {...post} />
                             ))
                         )}
                     </div>

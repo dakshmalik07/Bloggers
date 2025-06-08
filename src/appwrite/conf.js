@@ -1,4 +1,3 @@
-
 import config from "../config/config";
 import { Client,ID ,Databases, Storage,  Query} from "appwrite";
 
@@ -154,7 +153,7 @@ async updatePost(postId, {title, slug, content, featuredImage, status}) {
     }
 
 
-    // New comment methods
+    // New comment methods - FIXED to return proper array structure
     async createComment({postId, userId, userName, content}) {
         try {
             const comment = await this.databaseService.createDocument(
@@ -177,18 +176,21 @@ async updatePost(postId, {title, slug, content, featuredImage, status}) {
 
     async getComments(postId) {
         try {
-            const comments = await this.databaseService.listDocuments(
+            const response = await this.databaseService.listDocuments(
                 config.appwriteDatabaseId,
                 config.appwriteCommentsCollectionId,
                 [
-                    Query.equal("postId", postId)
-                  
+                    Query.equal("postId", postId),
+                    Query.orderDesc("$createdAt") // Show newest comments first
                 ]
             );
-            return comments;
+            
+            // Return the documents array, not the whole response object
+            return response.documents || [];
         } catch (error) {
             console.error("Error getting comments:", error);
-            throw error;
+            // Return empty array on error to prevent map() issues
+            return [];
         }
     }
 
@@ -205,11 +207,7 @@ async updatePost(postId, {title, slug, content, featuredImage, status}) {
             throw error;
         }
     }
-
-    
-
 }
-
 
 const databaseService = new DatabaseService();
 export default databaseService;

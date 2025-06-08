@@ -14,7 +14,11 @@ import Home from './pages/Home.jsx'
 
 import { AuthLayout, Login} from './components/index.js'
 import BlogIdeaGenerator from './components/BlogIdeaGenerator.jsx'
+import cacheManager from './redis/cacheManager.js'
 
+
+// Initialize cache manager when app starts
+cacheManager.initialize();
 const router = createBrowserRouter([
   {
     path: "/",
