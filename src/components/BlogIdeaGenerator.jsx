@@ -56,6 +56,8 @@ const BlogIdeaGenerator = () => {
       setFilteredTopics(topicsByCategory[activeCategory] || []);
     }
   }, [activeCategory]);
+
+  
   
   const handleGenerate = async () => {
     if (!topic || loading) return;
@@ -66,26 +68,42 @@ const BlogIdeaGenerator = () => {
     setLastGeneratedTopic(topic);
     
     try {
-      // Mock generated ideas for demonstration purposes
-      setTimeout(() => {
-        const demoIdeas = [
-          `The Ultimate Guide to ${topic} for Beginners`,
-          `10 Innovative Ways to Approach ${topic} in 2025`,
-          `How ${topic} is Changing the Future of Industry`,
-          `The Science Behind ${topic}: What Research Reveals`,
-          `${topic} Trends That Will Dominate Next Year`,
-          `Common Mistakes to Avoid When Working With ${topic}`,
-          `How to Build a Career in ${topic}`,
-          `${topic} Case Studies: Success Stories and Lessons Learned`
-        ];
+      // Call the actual Cohere API function
+      const result = await generateBlogIdeas(topic);
+      
+      // Check if we got an error response with fallback ideas
+      if (result.error) {
+        setError(result.message);
+        setIdeas(result.ideas);
+      } else {
+        // Process the API response - filter out empty lines and format
+        const processedIdeas = result
+          .filter(idea => idea.trim() !== '')
+          .map(idea => idea.replace(/^\d+\.\s*/, '').trim()) // Remove numbering if present
+          .slice(0, 8); // Limit to 8 ideas
         
-        setIdeas(demoIdeas);
-        setLoading(false);
-      }, 1500);
+        setIdeas(processedIdeas);
+      }
+      
+      setLoading(false);
       
     } catch (err) {
       console.error("Generator error:", err);
       setError("An unexpected error occurred. Please try again or use our suggested ideas.");
+      
+      // Fallback to demo ideas if API fails
+      const fallbackIdeas = [
+        `The Ultimate Guide to ${topic} for Beginners`,
+        `10 Innovative Ways to Approach ${topic} in 2025`,
+        `How ${topic} is Changing the Future of Industry`,
+        `The Science Behind ${topic}: What Research Reveals`,
+        `${topic} Trends That Will Dominate Next Year`,
+        `Common Mistakes to Avoid When Working With ${topic}`,
+        `How to Build a Career in ${topic}`,
+        `${topic} Case Studies: Success Stories and Lessons Learned`
+      ];
+      
+      setIdeas(fallbackIdeas);
       setLoading(false);
     }
   };

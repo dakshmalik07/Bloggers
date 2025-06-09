@@ -9,7 +9,7 @@ export const generateBlogIdeas = async (topic) => {
     return getFallbackIdeas(topic);
   }
 
-  const prompt = `Generate 5 unique and engaging blog post ideas about: ${topic}`;
+  const prompt = `Generate unique and engaging blog post ideas about: ${topic}`;
 
   try {
     const response = await axios.post(
@@ -17,7 +17,7 @@ export const generateBlogIdeas = async (topic) => {
       {
         model: "command", // Use faster lightweight models when possible
         prompt: `Generate 10 blog post ideas about ${topic}.`,
-        max_tokens: 150, // Request only what you need
+        max_tokens: 200, // Request only what you need
         temperature: 0.7,
       },
       {
