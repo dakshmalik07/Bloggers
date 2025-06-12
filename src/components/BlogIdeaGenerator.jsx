@@ -131,6 +131,7 @@ const BlogIdeaGenerator = () => {
   };
 
   return (
+    <div className='bg-gradient-to-br from-purple-230 to-indigo-300 min-h-screen flex items-center justify-center p-6'>
     <div className="w-full max-w-4xl mx-auto relative p-8 bg-gradient-to-br from-violet-50 to-indigo-50 rounded-2xl shadow-lg border border-indigo-100 my-8 overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-purple-300 rounded-full filter blur-3xl opacity-20 -mr-20 -mt-20"></div>
@@ -348,6 +349,7 @@ const BlogIdeaGenerator = () => {
           Copied to clipboard!
         </div>
       )}
+    </div>
     </div>
   );
 };
