@@ -3,7 +3,14 @@ import { Controller } from 'react-hook-form';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-export default function RTE({ name, control, label, defaultValue = "" }) {
+export default function RTE({ 
+  name, 
+  control, 
+  label, 
+  defaultValue = "", 
+  minLength = 100, // Minimum character count
+  showCharCount = true 
+}) {
   const modules = {
     toolbar: [
       [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
@@ -22,6 +29,14 @@ export default function RTE({ name, control, label, defaultValue = "" }) {
     'link', 'image'
   ];
 
+  // Function to strip HTML tags and get plain text length
+  const getPlainTextLength = (html) => {
+    if (!html) return 0;
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent?.trim().length || 0;
+  };
+
   return (
     <div className='w-full'>
       {label && (
@@ -35,21 +50,61 @@ export default function RTE({ name, control, label, defaultValue = "" }) {
           name={name}
           control={control}
           defaultValue={defaultValue}
-          render={({ field: { onChange, value } }) => (
-            <div className="w-full">
-              <ReactQuill
-                theme="snow"
-                value={value}
-                onChange={onChange}
-                modules={modules}
-                formats={formats}
-                className="w-full"
-                style={{ 
-                  minHeight: '400px'
-                }}
-              />
-            </div>
-          )}
+          rules={{
+            validate: (value) => {
+              const textLength = getPlainTextLength(value);
+              if (textLength < minLength) {
+                return `Content must be at least ${minLength} characters long. Current: ${textLength}`;
+              }
+              return true;
+            }
+          }}
+          render={({ field: { onChange, value }, fieldState: { error } }) => {
+            const currentLength = getPlainTextLength(value);
+            const isValidLength = currentLength >= minLength;
+            
+            return (
+              <div className="w-full">
+                <ReactQuill
+                  theme="snow"
+                  value={value}
+                  onChange={onChange}
+                  modules={modules}
+                  formats={formats}
+                  className="w-full"
+                  style={{ 
+                    minHeight: '400px'
+                  }}
+                />
+                
+                {/* Character count and validation message */}
+                <div className="mt-2 flex justify-between items-center">
+                  {showCharCount && (
+                    <div className={`text-sm ${
+                      isValidLength 
+                        ? 'text-green-400' 
+                        : 'text-orange-400'
+                    }`}>
+                      {currentLength} / {minLength} characters minimum
+                    </div>
+                  )}
+                  
+                  {!isValidLength && currentLength > 0 && (
+                    <div className="text-sm text-red-400">
+                      Need {minLength - currentLength} more characters
+                    </div>
+                  )}
+                </div>
+                
+                {/* Error message */}
+                {error && (
+                  <div className="mt-2 text-sm text-red-400 bg-red-900/20 border border-red-500/30 rounded-lg px-3 py-2">
+                    {error.message}
+                  </div>
+                )}
+              </div>
+            );
+          }}
         />
       </div>
 
